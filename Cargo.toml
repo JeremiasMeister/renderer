@@ -1,0 +1,10 @@
+[package]
+name = "renderer"
+version = "0.1.0"
+edition = "2021"
+
+# Cargo.toml
+[dependencies]
+minifb = "0.25.0"
+nalgebra = "0.32.3"
+wgpu = "0.17.1"
