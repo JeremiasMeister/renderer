@@ -1,11 +1,12 @@
 mod renderer;
+mod modifiers;
 use nalgebra::Vector4;
 use minifb::{Key, WindowOptions, Window, Scale};
 
 use renderer::render::{draw_object, Camera};
+use modifiers::io::load_texture;
 
-
-fn main() {      
+fn run_debug_scene(){
     // loading object from obj
     let path = "resources/monkey.obj";
     let monkey = renderer::reader::read_obj(path);
@@ -26,10 +27,10 @@ fn main() {
     };
     let dimensions = (1024, 800);
     let mut buffer = vec![0u32; dimensions.0 * dimensions.1];
-    
+
 
     let mut window = Window::new(
-        "Render Object",
+        "DEBUG SCENE",
         dimensions.0,
         dimensions.1,
         WindowOptions {
@@ -40,7 +41,7 @@ fn main() {
         .unwrap_or_else(|e| {
             panic!("{}", e);
         });
-  
+
     let monkey_pos = Vector4::new(0.0, 0.0, 0.0, 0.0);
     let cube_pos = Vector4::new(-2.0, 2.0, 0.0, 0.0);
     let plane_pos = Vector4::new(-5.0, 4.0, 2.5, 0.0);
@@ -61,5 +62,55 @@ fn main() {
             .update_with_buffer(&buffer, dimensions.0, dimensions.1)
             .unwrap();
     }
-    
+}
+
+fn run_heightmap_display(){
+    let heightmap = load_texture( "resources/map_height.png");
+    let colormap = load_texture("resources/map_color.png");    
+    let dimensions = heightmap.dimensions();
+    let mut plane = renderer::reader::unit_plane(dimensions.0 as usize, dimensions.1 as usize, 0x00FF00);
+    let camera = Camera {
+        fov: 90.0,
+        near: 0.1,
+        up: Vector4::new(0.0, 1.0, 0.0, 0.0),
+        far: 1000.0,
+        position: Vector4::new(0.0, 0.0, -20.0, 1.0),
+        look_at: Vector4::new(0.0, 0.0, 0.0, 1.0),
+    };
+
+    let window_size = (1024, 800);
+    let mut buffer = vec![0u32; window_size.0 * window_size.1];
+    let mut window = Window::new(
+        "HEIGHTMAP DISPLAY",
+        window_size.0,
+        window_size.1,
+        WindowOptions {
+            scale: Scale::X1,
+            ..Default::default()
+        },
+    ).unwrap_or_else(|e| {
+        panic!("{}", e);
+    });
+
+    //displace plane
+    modifiers::modifiers::displace_plane(&mut plane, &heightmap, 60.0);
+    modifiers::modifiers::colorize_plane(&mut plane, &colormap);
+
+       
+    let rotation = Vector4::new(0.0, 45.0, 0.0, 0.0);
+    let uni_size = 10.0;
+    let scale = Vector4::new(uni_size / dimensions.0 as f32, uni_size / dimensions.0 as f32, uni_size / dimensions.0 as f32, 0.0);
+    let position = Vector4::new(-4.0, 0.5, 0.0, 0.0);
+    while window.is_open() && !window.is_key_down(Key::Escape) {      
+        draw_object(&mut buffer, &plane, window_size, &camera, position, rotation, scale, Some(0x000000));
+        window
+            .update_with_buffer(&buffer, window_size.0, window_size.1)
+            .unwrap();
+    }
+
+}
+
+fn main() {      
+    //run_debug_scene();   
+    run_heightmap_display(); 
 }
