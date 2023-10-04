@@ -1,5 +1,6 @@
 mod renderer;
 mod modifiers;
+use image::imageops::FilterType;
 use nalgebra::Vector4;
 use minifb::{Key, WindowOptions, Window, Scale};
 
@@ -65,11 +66,27 @@ fn run_debug_scene(){
 }
 
 fn run_heightmap_display(){
-    let heightmap = load_texture( "resources/map_height.png");
-    let colormap = load_texture("resources/map_color.png");    
-    let dimensions = heightmap.dimensions();
+    let window_size: (usize, usize) = (1024, 800);
+    let dimensions: (usize,usize) = (64,64);
+    let image_filter = FilterType::Nearest;
+    let mut heightmap = load_texture( "resources/map_height.png");
+    let mut colormap = load_texture("resources/map_color.png"); 
+
+    match modifiers::modifiers::scale_image(&mut heightmap, (dimensions.0 as u32, dimensions.1 as u32), image_filter){
+        Ok(_) => {},
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }
+    match modifiers::modifiers::scale_image(&mut colormap, (dimensions.0 as u32, dimensions.1 as u32), image_filter){
+        Ok(_) => {},
+        Err(e) => {
+            println!("Error: {}", e);
+        }
+    }     
+
     let mut plane = renderer::reader::unit_plane(dimensions.0 as usize, dimensions.1 as usize, 0x00FF00);
-    let camera = Camera {
+    let mut camera = Camera {
         fov: 90.0,
         near: 0.1,
         up: Vector4::new(0.0, 1.0, 0.0, 0.0),
@@ -78,7 +95,7 @@ fn run_heightmap_display(){
         look_at: Vector4::new(0.0, 0.0, 0.0, 1.0),
     };
 
-    let window_size = (1024, 800);
+    
     let mut buffer = vec![0u32; window_size.0 * window_size.1];
     let mut window = Window::new(
         "HEIGHTMAP DISPLAY",
@@ -93,19 +110,35 @@ fn run_heightmap_display(){
     });
 
     //displace plane
-    modifiers::modifiers::displace_plane(&mut plane, &heightmap, 60.0);
+    modifiers::modifiers::displace_plane(&mut plane, &heightmap, 20.0);
     modifiers::modifiers::colorize_plane(&mut plane, &colormap);
 
        
-    let rotation = Vector4::new(0.0, 45.0, 0.0, 0.0);
+    let rotation = Vector4::new(0.0, 0.0, 0.0, 0.0);
     let uni_size = 10.0;
     let scale = Vector4::new(uni_size / dimensions.0 as f32, uni_size / dimensions.0 as f32, uni_size / dimensions.0 as f32, 0.0);
-    let position = Vector4::new(-4.0, 0.5, 0.0, 0.0);
+    let position = Vector4::new(0.0, 0.0, 0.0, 0.0);
     while window.is_open() && !window.is_key_down(Key::Escape) {      
         draw_object(&mut buffer, &plane, window_size, &camera, position, rotation, scale, Some(0x000000));
         window
             .update_with_buffer(&buffer, window_size.0, window_size.1)
             .unwrap();
+
+        if window.get_mouse_down(minifb::MouseButton::Right){
+            if window.is_key_down(Key::Space){
+                camera.position.y += 0.1;
+            }
+        } else {
+            if window.is_key_down(Key::A){
+                camera.rotate_around_look_at(camera.up, 0.1);
+            }
+            if window.is_key_down(Key::D){
+                camera.rotate_around_look_at(camera.up, -0.1);
+            }
+            if window.is_key_down(Key::Space){
+                camera.position.y -= 0.1;
+            }
+        }
     }
 
 }

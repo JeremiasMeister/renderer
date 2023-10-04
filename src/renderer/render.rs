@@ -1,5 +1,5 @@
 
-use nalgebra::{Matrix4, Vector4,Vector3, Translation3, Point3};
+use nalgebra::{Matrix4, Vector4,Vector3, Translation3, Point3, Unit};
 use super::math::{remap, lerp_color};
 
 #[derive(Debug)]
@@ -59,6 +59,21 @@ impl Camera {
             f.x, f.y, f.z, r_val,
             0.0, 0.0, 0.0, 1.0
         )
+    }
+
+    pub fn rotate_around_look_at(&mut self, axis: Vector4<f32>, angle: f32) {
+        let rotation_matrix = Matrix4::from_axis_angle(&Unit::new_normalize(Vector3::new(axis.x, axis.y, axis.z)), angle);
+        let position3 = Vector4::new(self.position.x, self.position.y, self.position.z,1.0);
+        let look_at3 = Vector4::new(self.look_at.x, self.look_at.y, self.look_at.z,1.0);
+        let up3 = Vector4::new(self.up.x, self.up.y, self.up.z,1.0);
+
+        let new_position = rotation_matrix * position3;
+        let new_look_at = rotation_matrix * look_at3;
+        let new_up = rotation_matrix * up3;
+
+        self.position = Vector4::new(new_position.x, new_position.y, new_position.z, 1.0);
+        self.look_at = Vector4::new(new_look_at.x, new_look_at.y, new_look_at.z, 1.0);
+        self.up = Vector4::new(new_up.x, new_up.y, new_up.z, 1.0);
     }
 }
 

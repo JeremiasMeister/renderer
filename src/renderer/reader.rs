@@ -86,8 +86,8 @@ pub fn unit_plane(x_division: usize, z_division: usize, color: u32) -> Object3D 
 
     for x in 0..x_division {
         for z in 0..z_division {
-            let x = x as f32;
-            let z = z as f32;
+            let x = x as f32 - x_division as f32 / 2.0;
+            let z = z as f32 - z_division as f32 / 2.0;
             vertices.push(Vector4::new(x, 0.0, z, 1.0));
             colors.push(color);
         }
