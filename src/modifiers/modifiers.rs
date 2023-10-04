@@ -4,6 +4,14 @@ use image::{ImageBuffer, Rgba, imageops::FilterType};
 use std::error::Error;
 
 
+pub fn buffer_to_image_buffer(buffer: &[u32], dimensions: (u32, u32)) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    let mut image_buffer = ImageBuffer::new(dimensions.0, dimensions.1);
+    for (x, y, pixel) in image_buffer.enumerate_pixels_mut() {
+        *pixel = Rgba(buffer[(x + y * dimensions.0) as usize].to_be_bytes());
+    }
+    image_buffer
+}
+
 fn rgba_to_u32(rgba: image::Rgba<u8>) -> u32 {
     let [r, g, b, a] = rgba.0;
     ((a as u32) << 24) | ((r as u32) << 16) | ((g as u32) << 8) | (b as u32)

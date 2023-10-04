@@ -67,7 +67,7 @@ fn run_debug_scene(){
 
 fn run_heightmap_display(){
     let window_size: (usize, usize) = (1024, 800);
-    let dimensions: (usize,usize) = (64,64);
+    let dimensions: (usize,usize) = (256,256);
     let image_filter = FilterType::Nearest;
     let mut heightmap = load_texture( "resources/map_height.png");
     let mut colormap = load_texture("resources/map_color.png"); 
@@ -91,10 +91,10 @@ fn run_heightmap_display(){
         near: 0.1,
         up: Vector4::new(0.0, 1.0, 0.0, 0.0),
         far: 1000.0,
-        position: Vector4::new(0.0, 0.0, -20.0, 1.0),
+        position: Vector4::new(0.0, 5.0, -20.0, 1.0),
         look_at: Vector4::new(0.0, 0.0, 0.0, 1.0),
     };
-
+    camera.rotate_around_look_at(camera.up, 45.0);
     
     let mut buffer = vec![0u32; window_size.0 * window_size.1];
     let mut window = Window::new(
@@ -110,7 +110,7 @@ fn run_heightmap_display(){
     });
 
     //displace plane
-    modifiers::modifiers::displace_plane(&mut plane, &heightmap, 20.0);
+    modifiers::modifiers::displace_plane(&mut plane, &heightmap, 30.0);
     modifiers::modifiers::colorize_plane(&mut plane, &colormap);
 
        

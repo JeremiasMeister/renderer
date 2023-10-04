@@ -1,0 +1,21 @@
+{
+  "scale": 0.012973477132618427,
+  "offset_x": 172.68638610839844,
+  "offset_y": 120.42603302001953,
+  "seed": 1410,
+  "layers": "[{\"scale\":0.0346379317343235,\"offset_x\":0.0,\"offset_y\":0.0,\"seed\":1,\"opacity\":0.1768292635679245,\"blend_mode\":2},{\"scale\":0.10000000149011612,\"offset_x\":0.0,\"offset_y\":0.0,\"seed\":1,\"opacity\":0.05487804487347603,\"blend_mode\":2},{\"scale\":0.044879309833049774,\"offset_x\":0.0,\"offset_y\":0.0,\"seed\":1,\"opacity\":0.14024390280246735,\"blend_mode\":2},{\"scale\":0.06413638591766357,\"offset_x\":0.0,\"offset_y\":0.0,\"seed\":1,\"opacity\":0.21902550756931305,\"blend_mode\":2}]",
+  "erosion_mode": 1,
+  "erosion_iterations": 9,
+  "talus_angle": 0.01,
+  "flatten_enabled": true,
+  "ground_level": 95,
+  "calculate_rivers": true,
+  "river_iterations": 256,
+  "erosion_factor": 6,
+  "river_amount": 100,
+  "river_seed": 575,
+  "filename": "map",
+  "export_scale": 0,
+  "export_filter": 3,
+  "as_water": true
+}

@@ -2,7 +2,6 @@
 use nalgebra::{Matrix4, Vector4,Vector3, Translation3, Point3, Unit};
 use super::math::{remap, lerp_color};
 
-#[derive(Debug)]
 pub struct Object3D{
     pub vertices: Vec<Vector4<f32>>,
     pub colors: Vec<u32>,
@@ -16,7 +15,13 @@ impl Object3D {
     }        
 }
 
-#[derive(Debug)]
+
+pub struct Light {
+    pub position: Vector4<f32>,
+    pub color: u32,
+    pub intensity: f32,
+}
+
 pub struct Camera {
     pub fov: f32,
     pub near: f32,
