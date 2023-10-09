@@ -35,12 +35,12 @@ impl Camera {
     pub fn get_projection_matrix(&self, aspect_ratio: f32) -> Matrix4<f32> {
         let fov_rad = self.fov.to_radians();
         let f = 1.0 / (fov_rad / 2.0).tan();
-        
+
         Matrix4::new(
             f / aspect_ratio, 0.0, 0.0, 0.0,
             0.0, f, 0.0, 0.0,
             0.0, 0.0, (self.far + self.near) / (self.near - self.far), -1.0,
-            0.0, 0.0, (2.0 * self.far * self.near) / (self.near - self.far), 0.0
+            0.0, 0.0, (2.0 * self.far * self.near) / (self.near - self.far), 0.0,
         )
     }
 
@@ -62,15 +62,15 @@ impl Camera {
             r.x, r.y, r.z, p,
             u.x, u.y, u.z, q,
             f.x, f.y, f.z, r_val,
-            0.0, 0.0, 0.0, 1.0
+            0.0, 0.0, 0.0, 1.0,
         )
     }
 
     pub fn rotate_around_look_at(&mut self, axis: Vector4<f32>, angle: f32) {
         let rotation_matrix = Matrix4::from_axis_angle(&Unit::new_normalize(Vector3::new(axis.x, axis.y, axis.z)), angle);
-        let position3 = Vector4::new(self.position.x, self.position.y, self.position.z,1.0);
-        let look_at3 = Vector4::new(self.look_at.x, self.look_at.y, self.look_at.z,1.0);
-        let up3 = Vector4::new(self.up.x, self.up.y, self.up.z,1.0);
+        let position3 = Vector4::new(self.position.x, self.position.y, self.position.z, 1.0);
+        let look_at3 = Vector4::new(self.look_at.x, self.look_at.y, self.look_at.z, 1.0);
+        let up3 = Vector4::new(self.up.x, self.up.y, self.up.z, 1.0);
 
         let new_position = rotation_matrix * position3;
         let new_look_at = rotation_matrix * look_at3;
@@ -128,7 +128,7 @@ pub fn draw_object(buffer: &mut [u32], object: &Object3D, dimensions: (usize,usi
     let rotation_matrix = Matrix4::from_euler_angles(
         rotation.x,
         rotation.y,
-        rotation.z
+        rotation.z,
     );
     let position_point = Point3::new(position.x, position.y, position.z);
     let scaling_vec = Vector3::new(scale.x, scale.y, scale.z);

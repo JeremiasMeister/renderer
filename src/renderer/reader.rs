@@ -16,17 +16,16 @@ pub fn unit_sphere(color: u32) -> Object3D{
     let sector_step = 2.0 * pi / sector_count as f32;
     let stack_step = pi / stack_count as f32;
 
-    for i in 0..stack_count+1 {
+    for i in 0..stack_count + 1 {
         let stack_angle = pi / 2.0 - i as f32 * stack_step;
         let xy = radius * stack_angle.cos();
         let z = radius * stack_angle.sin();
 
-        for j in 0..sector_count+1 {
+        for j in 0..sector_count + 1 {
             let sector_angle = j as f32 * sector_step;
 
             let x = xy * sector_angle.cos();
             let y = xy * sector_angle.sin();
-
             vertices.push(Vector4::new(x, y, z, 1.0));
             colors.push(color);
         }
