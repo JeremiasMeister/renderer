@@ -9,6 +9,7 @@ include = [
 
 # Cargo.toml
 [dependencies]
+dirs = "5.0.1"
 image = "0.24.7"
 minifb = "0.25.0"
 nalgebra = "0.32.3"

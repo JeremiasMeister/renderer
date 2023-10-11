@@ -1,18 +1,17 @@
-
-use nalgebra::{Matrix4, Vector4,Vector3, Translation3, Point3, Unit};
+use nalgebra::{Matrix4, Vector4, Vector3, Translation3, Point3, Unit};
 use super::math::{remap, lerp_color};
 
-pub struct Object3D{
+pub struct Object3D {
     pub vertices: Vec<Vector4<f32>>,
     pub colors: Vec<u32>,
     pub edges: Vec<(usize, usize)>,
-    pub triangles: Vec<(usize,usize,usize)>
+    pub triangles: Vec<(usize, usize, usize)>,
 }
 
 impl Object3D {
-    pub fn new(vertices: Vec<Vector4<f32>>, colors: Vec<u32>, edges: Vec<(usize, usize)>, triangles: Vec<(usize,usize,usize)>) -> Object3D {
+    pub fn new(vertices: Vec<Vector4<f32>>, colors: Vec<u32>, edges: Vec<(usize, usize)>, triangles: Vec<(usize, usize, usize)>) -> Object3D {
         Object3D { vertices, colors, edges, triangles }
-    }        
+    }
 }
 
 
@@ -120,7 +119,7 @@ fn draw_triangle(buffer: &mut [u32], dimensions: (usize, usize), x0: usize, y0: 
     draw_line(buffer, dimensions, x2, y2, x0, y0, c2, c0);
 }
 
-pub fn draw_object(buffer: &mut [u32], object: &Object3D, dimensions: (usize,usize), camera: &Camera, position: Vector4<f32>, rotation: Vector4<f32>, scale: Vector4<f32>, background_color: Option<u32>){
+pub fn draw_object(buffer: &mut [u32], object: &Object3D, dimensions: (usize, usize), camera: &Camera, position: Vector4<f32>, rotation: Vector4<f32>, scale: Vector4<f32>, background_color: Option<u32>) {
     let aspect_ratio = dimensions.0 as f32 / dimensions.1 as f32;
     let projection_matrix = camera.get_projection_matrix(aspect_ratio);
     let view_matrix = camera.get_view_matrix();
@@ -148,7 +147,7 @@ pub fn draw_object(buffer: &mut [u32], object: &Object3D, dimensions: (usize,usi
         }
     }
 
-    for i in 0..transformed_vertices.iter().len(){
+    for i in 0..transformed_vertices.iter().len() {
         let vertex = transformed_vertices[i];
         let perspective_vertex = vertex / vertex.w;
         let x = ((perspective_vertex.x + 1.0) * (dimensions.0 as f32) / 2.0) as usize;
@@ -158,7 +157,7 @@ pub fn draw_object(buffer: &mut [u32], object: &Object3D, dimensions: (usize,usi
         }
     }
 
-    for i in 0..object.edges.iter().len(){
+    for i in 0..object.edges.iter().len() {
         let &(start, end) = &object.edges[i];
         let start_vertex = transformed_vertices[start] / transformed_vertices[start].w;
         let end_vertex = transformed_vertices[end] / transformed_vertices[end].w;
@@ -170,7 +169,7 @@ pub fn draw_object(buffer: &mut [u32], object: &Object3D, dimensions: (usize,usi
         draw_line(buffer, dimensions, x0, y0, x1, y1, object.colors[start], object.colors[end]);
     }
 
-    for i in 0..object.triangles.iter().len(){
+    for i in 0..object.triangles.iter().len() {
         let &(a, b, c) = &object.triangles[i];
         let a_vertex = transformed_vertices[a] / transformed_vertices[a].w;
         let b_vertex = transformed_vertices[b] / transformed_vertices[b].w;

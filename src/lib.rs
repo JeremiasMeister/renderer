@@ -156,6 +156,12 @@ fn run_heightmap_display() {
                 camera.position.y -= 0.1;
             }
         }
+        if window.get_mouse_down(minifb::MouseButton::Left){
+            let buffer_rgba = modifiers::modifiers::buffer_to_image_buffer_rgba(&buffer,(window_size.0 as u32, window_size.1 as u32));
+            let buffer_rgb = modifiers::modifiers::buffer_to_image_buffer_rgb(&buffer,(window_size.0 as u32, window_size.1 as u32));
+            modifiers::modifiers::save_image_to_desktop(&buffer_rgb, "RGB", "test");
+            modifiers::modifiers::save_image_to_desktop(&buffer_rgba, "RGBA", "test");
+        }
     }
 }
 

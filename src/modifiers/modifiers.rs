@@ -1,13 +1,57 @@
+extern crate dirs;
+
 use super::super::renderer::render;
 use render::Object3D;
 use image::{ImageBuffer, Rgba, imageops::FilterType};
 use std::error::Error;
 
+pub fn save_image_to_desktop(buffer: &ImageBuffer<Rgba<u8>, Vec<u8>>, filename: &str, suffix: &str) {
+    let desktop_path = dirs::desktop_dir();
+    match desktop_path {
+        Some(path) => {
+            let full_path = path.join(format!("{}_{}.png", filename, suffix));
+            println!("Desktop path: {}", full_path.display());
+            match buffer.save(full_path) {
+                Ok(_) => {
+                    println!("Image saved");
+                }
+                Err(e) => {
+                    println!("Couldn't save image: {}", e);
+                }
+            }
+        }
+        None => {
+            println!("Couldn't find desktop path");
+        }
+    }
+}
 
-pub fn buffer_to_image_buffer(buffer: &[u32], dimensions: (u32, u32)) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+pub fn buffer_to_image_buffer_rgba(buffer: &[u32], dimensions: (u32, u32)) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
     let mut image_buffer = ImageBuffer::new(dimensions.0, dimensions.1);
     for (x, y, pixel) in image_buffer.enumerate_pixels_mut() {
-        *pixel = Rgba(buffer[(x + y * dimensions.0) as usize].to_be_bytes());
+        let color = buffer[(x + y * dimensions.0) as usize];
+        let rgba = [
+            (color >> 24) as u8, // Red
+            (color >> 16) as u8, // Green
+            (color >> 8) as u8,  // Blue
+            color as u8,         // Alpha
+        ];
+        *pixel = Rgba(rgba);
+    }
+    image_buffer
+}
+
+pub fn buffer_to_image_buffer_rgb(buffer: &[u32], dimensions: (u32, u32)) -> ImageBuffer<Rgba<u8>, Vec<u8>> {
+    let mut image_buffer = ImageBuffer::new(dimensions.0, dimensions.1);
+    for (x, y, pixel) in image_buffer.enumerate_pixels_mut() {
+        let color = buffer[(x + y * dimensions.0) as usize];
+        let rgba = [
+            (color >> 16) as u8, // Red
+            (color >> 8) as u8,  // Green
+            color as u8,         // Blue
+            255,                 // Alpha
+        ];
+        *pixel = Rgba(rgba);
     }
     image_buffer
 }
@@ -21,17 +65,17 @@ pub fn displace_plane(plane: &mut Object3D, heightmap: &ImageBuffer<Rgba<u8>, Ve
     let dimensions = heightmap.dimensions();
     let width = dimensions.0;
     let height = dimensions.1;
-    for x in 0..width{
-        for y in 0..height{
+    for x in 0..width {
+        for y in 0..height {
             match plane.vertices.get_mut((x + y * width) as usize) {
                 Some(vertex) => {
                     let pixel = heightmap.get_pixel(x, y);
                     let height = (1.0 - (pixel[0] as f32 / 255.0)) * scale;
                     vertex[1] = height;
                     plane.vertices[(x + y * width) as usize] = vertex.clone();
-                },
+                }
                 None => panic!("Could not get vertex"),
-            }            
+            }
         }
     }
 }
@@ -40,15 +84,15 @@ pub fn colorize_plane(plane: &mut Object3D, colormap: &ImageBuffer<Rgba<u8>, Vec
     let dimensions = colormap.dimensions();
     let width = dimensions.0;
     let height = dimensions.1;
-    for x in 0..width{
-        for y in 0..height{
+    for x in 0..width {
+        for y in 0..height {
             match plane.colors.get_mut((x + y * width) as usize) {
                 Some(color) => {
                     let pixel = colormap.get_pixel(x, y);
                     *color = rgba_to_u32(*pixel);
-                },
+                }
                 None => (),
-            }            
+            }
         }
     }
 }
